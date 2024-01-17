@@ -1,2 +1,2 @@
 # breakout
-A simple breakout game made with pygame
+A simple breakout-style game made with pygame
