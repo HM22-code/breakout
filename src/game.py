@@ -4,71 +4,79 @@ from objects.ball import Ball
 from objects.brick import Brick
 from objects.paddle import Paddle
 
-# Init Pygame
-pygame.init()
+class Game():
+    
+    def __init__(self):
+        # Init Pygame
+        pygame.init()
 
-# Screen
-screen = pygame.display.set_mode((configs.SCREEN_WIDTH, configs.SCREEN_HEIGHT))
-pygame.display.set_caption("Breakout")
+        # Screen
+        self.screen = pygame.display.set_mode((configs.SCREEN_WIDTH, configs.SCREEN_HEIGHT))
+        pygame.display.set_caption("Breakout")
 
-# Clock to control FPS
-clock = pygame.time.Clock()
+        # Clock to control FPS
+        self.clock = pygame.time.Clock()
+        
+        # Sprites group
+        self.all_sprites = pygame.sprite.Group()
+        self.all_bricks = pygame.sprite.Group()
 
-def print_text(text, x, y, size=36, color=configs.BLACK):
-    font = pygame.font.SysFont(None, size)
-    surface_text = font.render(text, True, color)
-    rect = surface_text.get_rect()
-    rect.center = (x, y)
-    screen.blit(surface_text, rect)
+        # Adding Paddle
+        self.paddle = Paddle()
+        self.all_sprites.add(self.paddle)
 
-# Sprites group
-all_sprites = pygame.sprite.Group()
-all_bricks = pygame.sprite.Group()
+        # Adding Bricks
+        row_number = 4
+        column_number = 10
+        space = 10
+        for row in range(row_number):
+            for column in range(column_number):
+                brick = Brick(10, column, row, space)
+                self.all_sprites.add(brick)
+                self.all_bricks.add(brick)
 
-# Adding Paddle
-paddle = Paddle()
-all_sprites.add(paddle)
+        # Adding ball
+        self.ball = Ball(self.paddle)
+        self.all_sprites.add(self.ball)
+    
+    def print_text(self, text, x, y, size=36, color=configs.BLACK):
+        font = pygame.font.SysFont(None, size)
+        surface_text = font.render(text, True, color)
+        rect = surface_text.get_rect()
+        rect.center = (x, y)
+        self.screen.blit(surface_text, rect)
 
-# Adding Bricks
-row_number = 4
-column_number = 10
-space = 10
-for row in range(row_number):
-    for column in range(column_number):
-        brick = Brick(10, column, row, space)
-        all_sprites.add(brick)
-        all_bricks.add(brick)
+    def run(self):
+        # Game loop
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
-# Adding ball
-ball = Ball(paddle)
-all_sprites.add(ball)
+            self.all_sprites.update()
 
-# Game loop
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+            # Collisions between ball and bricks
+            collisions = pygame.sprite.spritecollide(self.ball, self.all_bricks, True)
+            if collisions:
+                self.ball.vy = -self.ball.vy
 
-    all_sprites.update()
+            # Check if ball is off screen
+            if self.ball.rect.y > configs.SCREEN_HEIGHT:
+                running = False
 
-    # Collisions between ball and bricks
-    collisions = pygame.sprite.spritecollide(ball, all_bricks, True)
-    if collisions:
-        ball.vy = -ball.vy
+            self.screen.fill(configs.WHITE)
+            self.all_sprites.draw(self.screen)
 
-    # Check if ball is off screen
-    if ball.rect.y > configs.SCREEN_HEIGHT:
-        running = False
+            # Print text if game over
+            if not running:
+                self.print_text("Game Over", configs.SCREEN_WIDTH // 2, configs.SCREEN_HEIGHT // 2)
 
-    screen.fill(configs.WHITE)
-    all_sprites.draw(screen)
+            pygame.display.flip()
+            self.clock.tick(60)
+        
+        pygame.quit()
+        quit()
 
-    # Print text if game over
-    if not running:
-        print_text("Game Over", configs.SCREEN_WIDTH // 2, configs.SCREEN_HEIGHT // 2)
-
-    pygame.display.flip()
-    clock.tick(60)
-
-pygame.quit()
+if __name__ == "__main__":
+    Game().run()
