@@ -2,6 +2,11 @@ import pygame
 import configs
 
 class Paddle(pygame.sprite.Sprite):
+    """ Paddle sprite class
+
+    Args:
+        pygame (_type_): sprite
+    """
     
     paddle_size = (configs.SCREEN_WIDTH // 6, 10)
     paddle_speed = 8

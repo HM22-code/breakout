@@ -2,9 +2,11 @@ import pygame
 import configs
 
 class Brick(pygame.sprite.Sprite):
-    
-    paddle_size = (configs.SCREEN_WIDTH // 6, 10)
-    paddle_speed = 8
+    """ Brick sprite class
+
+    Args:
+        pygame (_type_): sprite
+    """
     
     def __init__(self, column_number, column, row, space):
         super().__init__()

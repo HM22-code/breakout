@@ -1,34 +1,50 @@
 import pygame
-import assets
+import configs
 from classes.state import State
-from states.level import Level
+from objects.ball import Ball
+from objects.brick import Brick
+from objects.paddle import Paddle
+from states.end import End
 
 class Level(State):
+    """ Level state class
+
+    Args:
+        State (_type_): state
+    """
     
-    def __init__(self, display, state_manager):
-        self.display = display
-        self.state_manager = state_manager
-        
-        # Sprite Groups
-        
-        # Create Game objects
-        
-        # Background music
-        #self.music = assets.get_audio("start")
-        #self.music.set_volume(0.3)
+    def __init__(self, game):
+        super().__init__(game)
+        # Sprites group
+        self.all_sprites = pygame.sprite.Group()
+        self.all_bricks = pygame.sprite.Group()
+        # Adding Paddle
+        self.paddle = Paddle()
+        self.all_sprites.add(self.paddle)
+        # Adding Bricks
+        for row in range(4):
+            for column in range(10):
+                brick = Brick(10, column, row, 10)
+                self.all_sprites.add(brick)
+                self.all_bricks.add(brick)
+        # Adding ball
+        self.ball = Ball(self.paddle)
+        self.all_sprites.add(self.ball)
     
     def run(self):
+        # Input
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_RETURN]:
-            self.state_manager.set_state(self.state_manager.get_previous_state())
-        
-        #self.sprites.draw(self.display)
-        #self.sprites.update()
-        
-    def enter_state(self):
-        #self.music.play(loops = -1)
-        pass
-    
-    def exit_state(self):
-        #self.music.stop()
-        pass
+        if keys[pygame.K_ESCAPE]:
+            self.game.set_state(self.game.get_previous_state())
+        # Update
+        self.all_sprites.update()
+        # Collisions between ball and bricks
+        collisions = pygame.sprite.spritecollide(self.ball, self.all_bricks, True)
+        if collisions:
+            self.ball.vy = -self.ball.vy
+        # Check if ball is off screen
+        if self.ball.rect.y > configs.SCREEN_HEIGHT:
+            self.game.set_state(End(self.game))
+        # Draw
+        self.game.screen.fill(configs.WHITE)
+        self.all_sprites.draw(self.game.screen)

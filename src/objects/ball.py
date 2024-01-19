@@ -3,6 +3,11 @@ import configs
 import random
 
 class Ball(pygame.sprite.Sprite):
+    """ Ball sprite class
+
+    Args:
+        pygame (_type_): sprite
+    """
     
     ball_size = 20
     ball_speed = [7, 7]
@@ -21,7 +26,6 @@ class Ball(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += self.vx
         self.rect.y += self.vy
-
         if self.rect.x <= 0 or self.rect.x >= configs.SCREEN_WIDTH - self.ball_size:
             self.vx = -self.vx
         if self.rect.y <= 0:

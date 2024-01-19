@@ -1,10 +1,10 @@
 import pygame
+import sys
 from classes.state import State
 from objects.text import Text
-from states.level import Level
 
-class Start(State):
-    """ Start state class
+class End(State):
+    """ End state class
 
     Args:
         State (_type_): state
@@ -15,13 +15,15 @@ class Start(State):
         # Sprite Groups
         self.sprites = pygame.sprite.LayeredUpdates()
         # Create Game objects
-        Text("Press Enter to play",self.sprites)
+        Text("Game Over",self.sprites)
     
     def run(self):
         # Input
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RETURN]:
-            self.game.set_state(Level(self.game))
+            self.running = False
+            pygame.quit()
+            sys.exit()
         # Draw
         self.game.screen.fill((0,0,0))
         self.sprites.draw(self.game.screen)
